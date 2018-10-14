@@ -28,16 +28,23 @@ epi_r<-dataset[,1:6]
 summary(epi_r)
 
 
-# thisis not working imputing using mice, showing error
+epi_rr<-dataset[,2:6]
+library(VIM)
+aggr_plot <- aggr(epi_rr, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(epi_rr), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+marginplot(epi_rr[c(1,2)])
 
+
+
+
+epi_rr<-dataset[,2:6]
 library(mice)
-md.pattern(epi_r)
-epi_rr <- mice(epi_r,m=5,maxit=10,meth='pmm',seed=500)
+md.pattern(epi_rr)
+epi_rr <- mice(epi_rr,m=5,maxit=10,meth='pmm',seed=500)
 summary(epi_rr)
 
-library(VIM)
-aggr_plot <- aggr(epi_r, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(epi_r), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
-marginplot(epi_r[c(1,2)])
+epi_rr$imp$protein
+
+completed_epi<-complete(epi_rr,1)
 
 #######################
 
@@ -48,7 +55,7 @@ View(epi_r)
 class(epi_r)
 data1<-na.exclude(epi_r)
 View(data1)
-sum(is.na(data1))
+sum(is.na(data1))                       ### this is using the function na.exclude nd na.omit
 
 dataepi<-na.omit(epi_r)
 View(dataepi)
@@ -60,10 +67,10 @@ sum(is.na(data2))
 View(data2)
 head(data2)
 
-
+##############################
 
 library(factoextra)
-res.pca<-princomp(data2, scale = FALSE) # using princomp() function
+res.pca<-princomp(completed_epi, scale = FALSE) # using princomp() function
 res.pca
 
 
@@ -71,7 +78,7 @@ res.pca
 
 
 library(factoextra)
-res.pca<-prcomp(data2, scale = TRUE)
+res.pca<-prcomp(completed_epi, scale = TRUE)
 res.pca
 
 summary(res.pca)
@@ -92,7 +99,7 @@ res.var$cos2           # Quality of representation
 #b.Perform PCA using SVD approach
 
 library(factoextra)
-res.pca<-prcomp(data2, p=10)
+res.pca<-prcomp(completed_epi, p=10)
 res.pca
 
 
